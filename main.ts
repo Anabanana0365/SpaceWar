@@ -1,10 +1,16 @@
 namespace SpriteKind {
     export const Gas = SpriteKind.create()
+    export const Life_Up = SpriteKind.create()
 }
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     projectile = sprites.createProjectileFromSprite(assets.image`Go-N-Fight`, mySprite, 0, -70)
     projectile.startEffect(effects.fire)
     music.play(music.melodyPlayable(music.pewPew), music.PlaybackMode.UntilDone)
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Life_Up, function (sprite, otherSprite) {
+    info.changeLifeBy(1)
+    sprites.destroy(otherSprite, effects.hearts, 500)
+    music.play(music.melodyPlayable(music.powerUp), music.PlaybackMode.UntilDone)
 })
 sprites.onOverlap(SpriteKind.Enemy, SpriteKind.Projectile, function (sprite, otherSprite) {
     sprite.destroy(effects.blizzard, 500)
@@ -52,6 +58,12 @@ mySprite.setFlag(SpriteFlag.StayInScreen, true)
 info.changeLifeBy(1)
 statusbar = statusbars.create(20, 4, StatusBarKind.Energy)
 statusbar.attachToSprite(mySprite, -25, 0)
+let Heart = sprites.create(assets.image`Heart`, SpriteKind.Life_Up)
+game.onUpdateInterval(5000, function () {
+    Heart = sprites.createProjectileFromSide(assets.image`Heart`, 0, 50)
+    Heart.x = randint(5, 155)
+    Heart.setKind(SpriteKind.Life_Up)
+})
 game.onUpdateInterval(5000, function () {
     myFuel = sprites.createProjectileFromSide(assets.image`FlameShip-PowerUp`, 0, 50)
     myFuel.x = randint(5, 155)
